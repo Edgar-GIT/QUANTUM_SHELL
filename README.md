@@ -85,7 +85,7 @@ Both versions feature:
 
 ### Prerequisites
 
-- Python 3.7 or higher
+- Python 3.1 or higher
 - Windows OS (keylogger features require Windows)
 - Administrator privileges (for some operations)
 
@@ -102,7 +102,22 @@ cd QUANTUM_SHELL
 pip install -r requirements.txt
 ```
 
-### 3️⃣ Run the Listener
+### 3️⃣ Configure Discord Webhook (v2 only)
+
+**⚠️ IMPORTANT**: Before building the executable in v2, you must configure your Discord webhooks:
+
+1. Open `v2/qlistener.py`
+2. Find the webhook URLs at the top of the file:
+   ```python
+   WEBHOOK_INFO = "YOUR_DISCORD_WEBHOOK_URL_HERE"
+   WEBHOOK_LOGS = "YOUR_DISCORD_WEBHOOK_URL_HERE"
+   ```
+3. Replace with your own Discord webhook URLs
+4. Save the file
+
+**Note**: If you don't configure the webhooks, keylogger logs will be sent to the default webhooks (if any).
+
+### 4️⃣ Run the Listener
 
 **Version 1:**
 ```bash
@@ -127,16 +142,34 @@ python qlistener.py
    - Get your public IP
    - Start an HTTP server on port 8000
    - Create `current_ip.txt` with your IP
-3. Optionally create an executable before waiting for connections
+3. **Create the executable** when prompted (this is required for connections)
 4. Wait for client connections on port 9999
+
+### Creating and Distributing the Executable
+
+> ⚠️ **WARNING**: The executable **automatically adds itself to Windows Startup** and is **very difficult to remove**. Once executed, it will persist across system reboots and continue running in the background. Only use this on systems you own or have explicit permission to test.
+
+**⚠️ IMPORTANT**: For a connection to be established, you **must**:
+1. Create the executable using the listener's built-in builder
+2. **Before creating the executable (v2 only)**: Edit `qlistener.py` and change the Discord webhook URLs to your own:
+   ```python
+   WEBHOOK_INFO = "YOUR_DISCORD_WEBHOOK_URL_HERE"
+   WEBHOOK_LOGS = "YOUR_DISCORD_WEBHOOK_URL_HERE"
+   ```
+3. Send the generated `WindowsNETupdate.exe` to the target system
+4. The executable will automatically connect back to your listener
+
+**Note**: The executable is created in the `dist/` folder after building. Make sure to configure your Discord webhooks **before** building the executable, as the webhook URLs are embedded in the payload.
 
 ### Client (Payload)
 
+> ⚠️ **WARNING**: The payload **automatically installs itself to Windows Startup** and is **very difficult to remove**. It will persist across reboots and run silently in the background. Use only on systems you own or have explicit permission to test.
+
 The client automatically:
 - Connects to the listener using dynamic IP resolution
-- Installs itself to startup folder for persistence
+- **Installs itself to startup folder for persistence** (very difficult to remove)
 - Runs commands received from the listener
-- (v2 only) Logs keystrokes when activated
+- (v2 only) Logs keystrokes when activated and sends them to your Discord webhook
 
 ---
 
@@ -161,7 +194,7 @@ The client automatically:
 - Low-level keyboard hook
 - Real-time keystroke capture
 - Remote start/stop control
-- Discord webhook integration
+- Discord webhook integration (configure your webhook before building the executable)
 
 ---
 
